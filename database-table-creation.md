@@ -168,8 +168,8 @@ CREATE TABLE `messages` (
   `message_text` TEXT NOT NULL COMMENT '留言文本，不可为空',
   `user_id` INT NOT NULL COMMENT '用户 ID，外键关联 users(id)，级联删除',
   `word_id` INT NOT NULL COMMENT '单词 ID，外键关联 words(id)，级联删除',
-  `father_id` INT DEFAULT NULL COMMENT '父留言 ID，外键关联 messages(id)，级联删除',
-  `above_id` INT DEFAULT NULL COMMENT '上文留言 ID，用于当前留言是回复哪条留言（未明确要求级联）',
+  `father_id` BIGINT DEFAULT NULL COMMENT '父留言 ID，外键关联 messages(id)，级联删除',
+  `above_id` BIGINT DEFAULT NULL COMMENT '上文留言 ID，用于当前留言是回复哪条留言（未明确要求级联）',
   `created_at` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间，默认为当前时间',
   PRIMARY KEY (`id`),
   KEY `idx_user_id` (`user_id`),
@@ -291,7 +291,7 @@ CREATE TABLE `word_translation` (
 -- 16. 单词与词性关系表 (word_part_speech)
 CREATE TABLE `word_part_speech` (
   `word_id` INT NOT NULL COMMENT '单词 ID，外键关联 words(id)，级联删除',
-  `part_speech_id` INT NOT NULL COMMENT '词性 ID，外键关联 part_speech(id)，级联删除',
+  `part_speech_id` TINYINT NOT NULL COMMENT '词性 ID，外键关联 part_speech(id)，级联删除',
   PRIMARY KEY (`word_id`, `part_speech_id`),
   KEY `idx_part_speech` (`part_speech_id`),
   CONSTRAINT `fk_word_part_speech_word`
@@ -301,6 +301,7 @@ CREATE TABLE `word_part_speech` (
     FOREIGN KEY (`part_speech_id`) REFERENCES `part_speech`(`id`)
     ON DELETE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='单词与词性关系表';
+
 
 -- 17. 前缀与翻译关系表 (prefix_translation)
 CREATE TABLE `prefix_translation` (
