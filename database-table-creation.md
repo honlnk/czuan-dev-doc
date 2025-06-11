@@ -1,4 +1,13 @@
 ```sql
+-- 创建数据库
+CREATE DATABASE IF NOT EXISTS czuan
+    DEFAULT CHARACTER SET utf8mb4
+    DEFAULT COLLATE utf8mb4_general_ci;
+
+-- 选择数据库
+USE czuan;
+
+
 -- 1. 用户表 (users)
 CREATE TABLE `users` (
   `id` INT NOT NULL COMMENT '用户表 ID，主键，非自增，简化版雪花id',
@@ -149,7 +158,7 @@ CREATE TABLE `part_speech` (
 CREATE TABLE `translations` (
   `id` INT NOT NULL COMMENT '翻译表 ID，主键，非自增，简化版雪花id',
   `translation` VARCHAR(255) NOT NULL COMMENT '翻译文本，不可为空',
-  `part_id` TINYINT NOT NULL COMMENT '词性 ID，外键关联 part_speech(id)',
+  `part_id` TINYINT COMMENT '词性 ID，外键关联 part_speech(id)',
   `created_at` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间，默认为当前时间',
   `created_by` VARCHAR(255) DEFAULT NULL COMMENT '创建人',
   `update_at` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT '修改时间，默认为当前时间，更新时刷新',

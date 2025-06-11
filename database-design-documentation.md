@@ -70,6 +70,12 @@
 | `created_by`                    | VARCHAR(255) | 创建人                                                                     |
 | `update_at`                     | TIMESTAMP    | 修改时间，默认当前时间                                                             |
 | `update_by`                     | VARCHAR(255) | 修改人                                                                     |
+|                                 |              | 英式音标                                                                    |
+|                                 |              | 词典查询结果json文件地址                                                          |
+|                                 |              | AI解释单词md文件地址                                                            |
+|                                 |              | 中文语音文件地址                                                                |
+|                                 |              | 英文语音文件地址                                                                |
+|                                 |              | 基础翻译字符串                                                                 |
 
 **索引**：
 
@@ -234,103 +240,120 @@
 - `idx_user_word` (`user_id`, `word_id`) -- 用户+单词联合索引，用于查询用户对特定单词的复习结果
 - `idx_next_review` (`next_review_time`) -- 下次复习时间索引，用于查询待复习单词
 
-#### 12 多对多关系表
+#### 12 多对多关系表 (9张关系表)
 
 - **单词与前缀关系表（****`word_prefix`****）**
   - `word_id` 外键关联 `words(id)`，**级联删除**
   - `prefix_id` 外键关联 `prefixes(id)`，**级联删除**
-    \| 字段名         | 数据类型                     | 说明                       |
-    \| ----------- | ------------------------ | ------------------------ |
-    \| `word_id`   | INT                      | 单词 ID，外键关联到 `words` 表    |
-    \| `prefix_id` | INT                      | 前缀 ID，外键关联到 `prefixes` 表 |
-    \| **主键**      | (`word_id`, `prefix_id`) |                          |
+
+|  字段名         | 数据类型                     | 说明                       |
+| ----------- | ------------------------ | ------------------------ |
+| `word_id`   | INT                      | 单词 ID，外键关联到 `words` 表    |
+| `prefix_id` | INT                      | 前缀 ID，外键关联到 `prefixes` 表 |
+| **主键**      | (`word_id`, `prefix_id`) |                          |
+
 - **单词与后缀关系表（****`word_suffix`****）**
   - `word_id` 外键关联 `words(id)`，**级联删除**
   - `suffix_id`外键关联 `suffixes(id)`，**级联删除**
-    \| 字段名         | 数据类型                     | 说明                       |
-    \| ----------- | ------------------------ | ------------------------ |
-    \| `word_id`   | INT                      | 单词 ID，外键关联到 `words` 表    |
-    \| `suffix_id` | INT                      | 后缀 ID，外键关联到 `suffixes` 表 |
-    \| **主键**      | (`word_id`, `suffix_id`) |                          |
+
+| 字段名         | 数据类型                     | 说明                       |
+| ----------- | ------------------------ | ------------------------ |
+| `word_id`   | INT                      | 单词 ID，外键关联到 `words` 表    |
+| `suffix_id` | INT                      | 后缀 ID，外键关联到 `suffixes` 表 |
+| **主键**      | (`word_id`, `suffix_id`) |                          |
+
 - **单词与词根关系表（****`word_root`****）**
   - `word_id` 外键关联 `words(id)`，**级联删除**
   - `root_id`外键关联 `roots``(id)`，**级联删除**
-    \| 字段名       | 数据类型                   | 说明                    |
-    \| --------- | ---------------------- | --------------------- |
-    \| `word_id` | INT                    | 单词 ID，外键关联到 `words` 表 |
-    \| `root_id` | INT                    | 词根 ID，外键关联到 `roots` 表 |
-    \| **主键**    | (`word_id`, `root_id`) |                       |
+
+| 字段名       | 数据类型                   | 说明                    |
+| --------- | ---------------------- | --------------------- |
+| `word_id` | INT                    | 单词 ID，外键关联到 `words` 表 |
+| `root_id` | INT                    | 词根 ID，外键关联到 `roots` 表 |
+| **主键**    | (`word_id`, `root_id`) |                       |
+
 - **单词与翻译关系表（****`word_translation`****）**
   - `word_id` 外键关联 `words(id)`，**级联删除**
   - `translation_id`外键关联 `translations``(id)`，**级联删除**
-    \| 字段名              | 数据类型                          | 说明                           |
-    \| ---------------- | ----------------------------- | ---------------------------- |
-    \| `word_id`        | INT                           | 单词 ID，外键关联到 `words` 表        |
-    \| `translation_id` | INT                           | 含义 ID，外键关联到 `translations` 表 |
-    \| **主键**           | (`word_id`, `translation_id`) |                              |
+
+| 字段名              | 数据类型                          | 说明                           |
+| ---------------- | ----------------------------- | ---------------------------- |
+| `word_id`        | INT                           | 单词 ID，外键关联到 `words` 表        |
+| `translation_id` | INT                           | 含义 ID，外键关联到 `translations` 表 |
+| **主键**           | (`word_id`, `translation_id`) |                              |
+
 - **单词与词性关系表**（`word_part_speech`）
   - `word_id` 外键关联 `words(id)`，**级联删除**
   - `part_speech_id`外键关联 `part_speech(id)`，**级联删除**
-    \| 字段名              | 数据类型                          | 说明                         |
-    \| ---------------- | ----------------------------- | -------------------------- |
-    \| `word_id`        | INT                           | 单词 ID，外键关联到 `words` 表      |
-    \| `part_speech_id` | INT                           | 含义 ID，外键关联到 `part_speech`表 |
-    \| **主键**           | (`word_id`, `part_speech_id`) |                            |
+
+| 字段名              | 数据类型                          | 说明                         |
+| ---------------- | ----------------------------- | -------------------------- |
+| `word_id`        | INT                           | 单词 ID，外键关联到 `words` 表      |
+| `part_speech_id` | INT                           | 含义 ID，外键关联到 `part_speech`表 |
+| **主键**           | (`word_id`, `part_speech_id`) |                            |
+
 - **前缀与翻译关系表（****`prefix_translation`****）**
   - `prefix_id`外键关联 `prefixes``(id)`，**级联删除**
   - `translation_id`外键关联 `translations``(id)`，**级联删除**
-    \| 字段名              | 数据类型                            | 说明                           |
-    \| ---------------- | ------------------------------- | ---------------------------- |
-    \| `prefix_id`      | INT                             | 前缀 ID，外键关联到 `prefixes` 表     |
-    \| `translation_id` | INT                             | 含义 ID，外键关联到 `translations` 表 |
-    \| **主键**           | (`prefix_id`, `translation_id`) |                              |
+
+| 字段名              | 数据类型                            | 说明                           |
+| ---------------- | ------------------------------- | ---------------------------- |
+| `prefix_id`      | INT                             | 前缀 ID，外键关联到 `prefixes` 表     |
+| `translation_id` | INT                             | 含义 ID，外键关联到 `translations` 表 |
+| **主键**           | (`prefix_id`, `translation_id`) |                              |
+
 - **后缀与翻译关系表（****`suffix_translation`****）**
   - `suffix_id`外键关联 `suffixes``(id)`，**级联删除**
   - `translation_id`外键关联 `translations``(id)`，**级联删除**
-    \| 字段名              | 数据类型                            | 说明                           |
-    \| ---------------- | ------------------------------- | ---------------------------- |
-    \| `suffix_id`      | INT                             | 后缀 ID，外键关联到 `suffixes` 表     |
-    \| `translation_id` | INT                             | 含义 ID，外键关联到 `translations` 表 |
-    \| **主键**           | (`suffix_id`, `translation_id`) |                              |
+
+| 字段名              | 数据类型                            | 说明                           |
+| ---------------- | ------------------------------- | ---------------------------- |
+| `suffix_id`      | INT                             | 后缀 ID，外键关联到 `suffixes` 表     |
+| `translation_id` | INT                             | 含义 ID，外键关联到 `translations` 表 |
+| **主键**           | (`suffix_id`, `translation_id`) |                              |
 - **词根与翻译关系表（****`root_translation`****）**
   - `root_id`外键关联 `roots``(id)`，**级联删除**
   - `translation_id`外键关联 `translations``(id)`，**级联删除**
-    \| 字段名              | 数据类型                          | 说明                           |
-    \| ---------------- | ----------------------------- | ---------------------------- |
-    \| `root_id`        | INT                           | 词根 ID，外键关联到 `roots` 表        |
-    \| `translation_id` | INT                           | 含义 ID，外键关联到 `translations` 表 |
-    \| **主键**           | (`root_id`, `translation_id`) |                              |
+
+| 字段名              | 数据类型                          | 说明                           |
+| ---------------- | ----------------------------- | ---------------------------- |
+| `root_id`        | INT                           | 词根 ID，外键关联到 `roots` 表        |
+| `translation_id` | INT                           | 含义 ID，外键关联到 `translations` 表 |
+| **主键**           | (`root_id`, `translation_id`) |                              |
+
 - **单词派生关系表**（`derivative_words`）
-  | 字段名                                | 数据类型         | 说明                                        |
-  | ---------------------------------- | ------------ | ----------------------------------------- |
-  | \`original\_id\`                   | INT          | 单词id，外键到\`words\`表，最原始的单词的id(大部分情况是最短的那个) |
-  | \`derivative\_id\`                 | INT          | 单词id，外键到\`words\`表，被派生的单词。                |
-  | \`derivative\_type\`               | VARCHAR(255) | 派生类型                                      |
-  | \`explain\`                        | TEXT         | 对相关派生的解释                                  |
-  | 所有多对多关系表均添加联合主键索引（已存在），同时补充反向查询索引： |              |                                           |
-  - **单词与前缀关系表（****`word_prefix`****）**
+
+| 字段名                                | 数据类型         | 说明                                        |
+| ---------------------------------- | ------------ | ----------------------------------------- |
+| \`original\_id\`                   | INT          | 单词id，外键到\`words\`表，最原始的单词的id(大部分情况是最短的那个) |
+| \`derivative\_id\`                 | INT          | 单词id，外键到\`words\`表，被派生的单词。                |
+| \`derivative\_type\`               | VARCHAR(255) | 派生类型                                      |
+| \`explain\`                        | TEXT         | 对相关派生的解释                                  |
+| 所有多对多关系表均添加联合主键索引（已存在），同时补充反向查询索引： |              |                                           |
+  
+- **单词与前缀关系表（****`word_prefix`****）**
 
     **索引**：
     - 主键 (`word_id`, `prefix_id`)
     - `idx_prefix` (`prefix_id`) -- 前缀ID索引，用于查询使用特定前缀的单词
-  - **单词与后缀关系表（****`word_suffix`****）**
+- **单词与后缀关系表（****`word_suffix`****）**
 
     **索引**：
     - 主键 (`word_id`, `suffix_id`)
     - `idx_suffix` (`suffix_id`) -- 后缀ID索引，用于查询使用特定后缀的单词
-  - **单词与词根关系表（****`word_root`****）**
+- **单词与词根关系表（****`word_root`****）**
 
     **索引**：
     - 主键 (`word_id`, `root_id`)
     - `idx_root` (`root_id`) -- 词根ID索引，用于查询使用特定词根的单词
-  - **单词与翻译关系表（****`word_translation`****）**
+- **单词与翻译关系表（****`word_translation`****）**
 
     **索引**：
     - 主键 (`word_id`, `translation_id`)
     - `idx_translation` (`translation_id`) -- 翻译ID索引，用于查询特定翻译对应的单词
       ...(其他多对多表索引模式相同)...
 
-#### **百度翻译配置表**(`baidu_serve_info`)
+#### 13 百度翻译配置表(`baidu_serve_info`)
 
 | 字段名             | 数据类型         | 说明                    |
 | --------------- | ------------ | --------------------- |
