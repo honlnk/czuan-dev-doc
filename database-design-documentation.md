@@ -57,25 +57,29 @@
 | ------------------------------- | ------------ | ----------------------------------------------------------------------- |
 | `id`                            | INT          | 单词表的 ID，主键，不自增，自定义的简化版雪花id                                              |
 | `word`                          | VARCHAR(255) | 单词，不可为空                                                                 |
+| `base_translation`              | VARCHAR(255) | 基础翻译字符串                                                                 |
 | `explain`                       | TEXT         | 对单词的解释，或者辅助记忆方法                                                         |
 | `sense`                         | TEXT         | 单词表达的含义，比如在牛津词典中的解释；这个字段存储的并不是单词的直译，而是用一段文本对这个单词进行一个通用的解释。讲解这个单词究竟想表达什么 |
-| `phonetic_symbol`               | VARCHAR(255) | 音标（美式音标）                                                                |
+| `us_symbol`                     | VARCHAR(255) | 美式音标                                                                    |
+| `en_symbol`                     | VARCHAR(255) | 英式音标                                                                    |
 | `is_alone`                      | TINYINT      | 这个单词是否是独立(没有词根词缀，没用与其存在派生关系的单词等)单词；默认值为1；0表示不是独立的，1表示是独立的               |
 | `superordinate_id`              | INT          | 这个单词的“上义词”ID，不需要外键。                                                     |
 | `translations_id_list`          | JSON         | 这个单词的翻译的先后顺序（翻译表中对应的ID）                                                 |
-| `root_translations_id_list`     | JSON         | 这个单词的词根的翻译的先后顺序（翻译表中对应的ID）                                              |
+| `roots_id_list`                 | JSON         | 这个单词的词根的ID列表                                                            |
+| `prefixes_id_list`              | JSON         | 这个单词的前缀的ID列表                                                            |
+| `suffixes_id_list`              | JSON         | 这个单词的后缀的ID列表                                                            |
+| `roots_translations_id_list`    | JSON         | 这个单词的词根的翻译的先后顺序（翻译表中对应的ID）                                              |
 | `prefixes_translations_id_list` | JSON         | 这个单词的前缀的翻译的先后顺序（翻译表中对应的ID）                                              |
 | `suffixes_translations_id_list` | JSON         | 这个单词的后缀的翻译的先后顺序（翻译表中对应的ID）                                              |
+| `dict_data_json_url`            | VARCHAR(255) | 词典查询结果json文件地址                                                          |
+| `ai_explain_md_url`             | VARCHAR(255) | AI解释单词md文件地址                                                            |
+| `en_audio_url`                  | VARCHAR(255) | 英文语音文件地址                                                                |
+| `zh_audio_url`                  | VARCHAR(255) | 中文语音文件地址                                                                |
 | `created_at`                    | TIMESTAMP    | 创建时间，默认当前时间                                                             |
 | `created_by`                    | VARCHAR(255) | 创建人                                                                     |
 | `update_at`                     | TIMESTAMP    | 修改时间，默认当前时间                                                             |
 | `update_by`                     | VARCHAR(255) | 修改人                                                                     |
-|                                 |              | 英式音标                                                                    |
-|                                 |              | 词典查询结果json文件地址                                                          |
-|                                 |              | AI解释单词md文件地址                                                            |
-|                                 |              | 中文语音文件地址                                                                |
-|                                 |              | 英文语音文件地址                                                                |
-|                                 |              | 基础翻译字符串                                                                 |
+
 
 **索引**：
 
@@ -143,6 +147,7 @@
 
 | name | simple  | explain                | simplify\\\_explain |
 | ---- | ------- | ---------------------- | ------------------- |
+| 无    | null.   | 无词性                    | 无词性                 |
 | 名词   | n.      | 表示人、地点、事物或抽象概念的词语      | 表示实体或概念             |
 | 动词   | v.      | 表示动作、状态或事件的词语          | 表示行为或状态             |
 | 形容词  | adj.    | 用来描述名词特征或状态的词语         | 描述名词特征              |
@@ -376,13 +381,13 @@
 
 #### 14 百度翻译结果(`baidu_dist`)
 
-| 字段名                 | 数据类型         | 说明                          |
-| ------------------- | ------------ | --------------------------- |
-| id                  | INT          | 翻译结果的 ID，主键，不自增，自定义的简化版雪花id |
-| word                | VARCHAR(255) | 单词本身                        |
-| data\_oss\_ url     | VARCHAR(255) | 单词翻译结果的OSS路径                |
-| audo\_zh\_ oss\_url | VARCHAR(255) | 单词的中文音频OSS路径                |
-| audo\_en-oss\_ url  | VARCHAR(255) | 单词的英文音频OSS路径                |
+| 字段名                  | 数据类型         | 说明                          |
+| -------------------- | ------------ | --------------------------- |
+| id                   | INT          | 翻译结果的 ID，主键，不自增，自定义的简化版雪花id |
+| word                 | VARCHAR(255) | 单词本身                        |
+| data\_oss\_ url      | VARCHAR(255) | 单词翻译结果的OSS路径                |
+| zh\_audio\_ oss\_url | VARCHAR(255) | 单词的中文音频OSS路径                |
+| en\_audio\_oss\_ url | VARCHAR(255) | 单词的英文音频OSS路径                |
 
 #### 15 AI讲解单词(`ai_word_explain`)
 

@@ -55,21 +55,39 @@ VALUES
 
 -- 3. 单词表 (words)
 CREATE TABLE `words` (
-  `id` INT NOT NULL COMMENT '单词表 ID，主键，非自增，简化版雪花id',
+  `id` INT NOT NULL COMMENT '单词表 ID，主键，不自增，自定义的简化版雪花id',
   `word` VARCHAR(255) NOT NULL COMMENT '单词，不可为空',
-  `explain` TEXT DEFAULT NULL COMMENT '单词解释或辅助记忆方法',
-  `sense` TEXT DEFAULT NULL COMMENT '单词含义（牛津词典式解释）',
-  `phonetic_symbol` VARCHAR(255) DEFAULT NULL COMMENT '美式音标',
-  `is_alone` TINYINT NOT NULL DEFAULT 1 COMMENT '是否独立单词：0=不是，1=是；默认1',
+  `base_translation` VARCHAR(255) DEFAULT NULL COMMENT '基础翻译字符串',
+  `explain` TEXT DEFAULT NULL COMMENT '对单词的解释，或者辅助记忆方法',
+  `sense` TEXT DEFAULT NULL COMMENT '单词表达的含义（牛津词典式解释），存储用文本对单词的通用解释',
+  `us_symbol` VARCHAR(255) DEFAULT NULL COMMENT '美式音标',
+  `en_symbol` VARCHAR(255) DEFAULT NULL COMMENT '英式音标',
+  `is_alone` TINYINT NOT NULL DEFAULT 1 COMMENT '是否独立单词：0=非独立（有词根词缀/派生关系），1=独立；默认1',
   `superordinate_id` INT DEFAULT NULL COMMENT '上义词 ID，非外键',
-  `translations_id_list` JSON DEFAULT NULL COMMENT '该单词翻译 ID 列表（JSON）',
-  `root_translations_id_list` JSON DEFAULT NULL COMMENT '该单词词根翻译 ID 列表（JSON）',
-  `prefixes_translations_id_list` JSON DEFAULT NULL COMMENT '该单词前缀翻译 ID 列表（JSON）',
-  `suffixes_translations_id_list` JSON DEFAULT NULL COMMENT '该单词后缀翻译 ID 列表（JSON）',
-  `created_at` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间，默认为当前时间',
+  
+  -- 词根词缀ID列表
+  `roots_id_list` JSON DEFAULT NULL COMMENT '词根的ID列表',
+  `prefixes_id_list` JSON DEFAULT NULL COMMENT '前缀的ID列表',
+  `suffixes_id_list` JSON DEFAULT NULL COMMENT '后缀的ID列表',
+  
+  -- 翻译ID列表
+  `translations_id_list` JSON DEFAULT NULL COMMENT '单词翻译ID列表（JSON）',
+  `roots_translations_id_list` JSON DEFAULT NULL COMMENT '词根翻译ID列表（JSON）',
+  `prefixes_translations_id_list` JSON DEFAULT NULL COMMENT '前缀翻译ID列表（JSON）',
+  `suffixes_translations_id_list` JSON DEFAULT NULL COMMENT '后缀翻译ID列表（JSON）',
+  
+  -- 资源URL
+  `dict_data_json_url` VARCHAR(255) DEFAULT NULL COMMENT '词典查询结果json文件地址',
+  `ai_explain_md_url` VARCHAR(255) DEFAULT NULL COMMENT 'AI解释单词md文件地址',
+  `en_audio_url` VARCHAR(255) DEFAULT NULL COMMENT '英文语音文件地址',
+  `zh_audio_url` VARCHAR(255) DEFAULT NULL COMMENT '中文语音文件地址',
+  
+  -- 审计字段
+  `created_at` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间，默认当前时间',
   `created_by` VARCHAR(255) DEFAULT NULL COMMENT '创建人',
-  `update_at` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT '修改时间，默认为当前时间，更新时刷新',
+  `update_at` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT '修改时间，默认当前时间，更新时刷新',
   `update_by` VARCHAR(255) DEFAULT NULL COMMENT '修改人',
+  
   PRIMARY KEY (`id`),
   KEY `idx_word` (`word`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='单词表';
@@ -79,7 +97,7 @@ CREATE TABLE `prefixes` (
   `id` INT NOT NULL COMMENT '前缀表 ID，主键，非自增，简化版雪花id',
   `prefix` VARCHAR(255) NOT NULL COMMENT '前缀，不可为空',
   `explain` TEXT DEFAULT NULL COMMENT '前缀解释或辅助记忆方法',
-  `from_word_id` INT NOT NULL COMMENT '来自哪个单词，外键到 words(id)',
+  `from_word_id` INT NULL COMMENT '来自哪个单词，外键到 words(id)',
   `count` INT NOT NULL DEFAULT 0 COMMENT '使用该前缀的单词数量',
   `created_at` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间，默认为当前时间',
   `created_by` VARCHAR(255) DEFAULT NULL COMMENT '创建人',
@@ -97,7 +115,7 @@ CREATE TABLE `suffixes` (
   `id` INT NOT NULL COMMENT '后缀表 ID，主键，非自增，简化版雪花id',
   `suffix` VARCHAR(255) NOT NULL COMMENT '后缀，不可为空',
   `explain` TEXT DEFAULT NULL COMMENT '后缀解释或辅助记忆方法',
-  `from_word_id` INT NOT NULL COMMENT '来自哪个单词，外键到 words(id)',
+  `from_word_id` INT NULL COMMENT '来自哪个单词，外键到 words(id)',
   `count` INT NOT NULL DEFAULT 0 COMMENT '使用该后缀的单词数量',
   `created_at` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间，默认为当前时间',
   `created_by` VARCHAR(255) DEFAULT NULL COMMENT '创建人',
@@ -115,7 +133,7 @@ CREATE TABLE `roots` (
   `id` INT NOT NULL COMMENT '词根表 ID，主键，非自增，简化版雪花id',
   `root` VARCHAR(255) NOT NULL COMMENT '词根，不可为空',
   `explain` TEXT DEFAULT NULL COMMENT '词根解释或辅助记忆方法',
-  `from_word_id` INT NOT NULL COMMENT '来自哪个单词，外键到 words(id)',
+  `from_word_id` INT NULL COMMENT '来自哪个单词，外键到 words(id)',
   `count` INT NOT NULL DEFAULT 0 COMMENT '使用该词根的单词数量',
   `created_at` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间，默认为当前时间',
   `created_by` VARCHAR(255) DEFAULT NULL COMMENT '创建人',
@@ -141,6 +159,7 @@ CREATE TABLE `part_speech` (
 -- 插入词性数据
 INSERT INTO `part_speech` (`name`, `simple`, `explain`, `simplify_explain`)
 VALUES 
+('无', 'null.', '无词性', '无词性'),
 ('名词', 'n.', '表示人、地点、事物或抽象概念的词语', '表示实体或概念'),
 ('动词', 'v.', '表示动作、状态或事件的词语', '表示行为或状态'),
 ('形容词', 'adj.', '用来描述名词特征或状态的词语', '描述名词特征'),
@@ -160,7 +179,7 @@ VALUES
 CREATE TABLE `translations` (
   `id` INT NOT NULL COMMENT '翻译表 ID，主键，非自增，简化版雪花id',
   `translation` VARCHAR(255) NOT NULL COMMENT '翻译文本，不可为空',
-  `part_id` TINYINT COMMENT '词性 ID，外键关联 part_speech(id)',
+  `part_id` TINYINT NOT NULL COMMENT '词性 ID，外键关联 part_speech(id)',
   `created_at` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间，默认为当前时间',
   `created_by` VARCHAR(255) DEFAULT NULL COMMENT '创建人',
   `update_at` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT '修改时间，默认为当前时间，更新时刷新',
@@ -388,8 +407,8 @@ CREATE TABLE `baidu_dist` (
   `id` INT NOT NULL COMMENT '翻译结果 ID，主键，非自增，简化版雪花id',
   `word` VARCHAR(255) DEFAULT NULL COMMENT '单词本身',
   `data_oss_url` VARCHAR(255) DEFAULT NULL COMMENT '翻译结果的 OSS 路径',
-  `audo_zh_oss_url` VARCHAR(255) DEFAULT NULL COMMENT '中文音频 OSS 路径',
-  `audo_en_oss_url` VARCHAR(255) DEFAULT NULL COMMENT '英文音频 OSS 路径',
+  `zh_audio_oss_url` VARCHAR(255) DEFAULT NULL COMMENT '中文音频 OSS 路径',
+  `en_audio_oss_url` VARCHAR(255) DEFAULT NULL COMMENT '英文音频 OSS 路径',
   PRIMARY KEY (`id`),
   KEY `idx_word` (`word`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='百度翻译结果表';

@@ -11,6 +11,20 @@
             "id": "9195db34419ec7c2",
             "type": "leaf",
             "state": {
+              "type": "split-diff-view",
+              "state": {
+                "aFile": "database-table-creation-data.md",
+                "bFile": "database-table-creation-data.md",
+                "aRef": ""
+              },
+              "icon": "diff",
+              "title": "Diff: database-table-creation-data"
+            }
+          },
+          {
+            "id": "c9baf70f07b7fbdb",
+            "type": "leaf",
+            "state": {
               "type": "markdown",
               "state": {
                 "file": "database-table-creation-data.md",
@@ -21,7 +35,8 @@
               "title": "database-table-creation-data"
             }
           }
-        ]
+        ],
+        "currentTab": 1
       }
     ],
     "direction": "vertical"
@@ -150,13 +165,23 @@
               "icon": "lucide-list",
               "title": "database-table-creation-data 的大纲"
             }
+          },
+          {
+            "id": "ef659e5ff309e0aa",
+            "type": "leaf",
+            "state": {
+              "type": "git-view",
+              "state": {},
+              "icon": "git-pull-request",
+              "title": "Source Control"
+            }
           }
-        ]
+        ],
+        "currentTab": 4
       }
     ],
     "direction": "horizontal",
-    "width": 300,
-    "collapsed": true
+    "width": 597.5
   },
   "left-ribbon": {
     "hiddenItems": {
@@ -165,13 +190,14 @@
       "canvas:新建白板": false,
       "daily-notes:打开/创建今天的日记": false,
       "templates:插入模板": false,
-      "command-palette:打开命令面板": false
+      "command-palette:打开命令面板": false,
+      "obsidian-git:Open Git source control": false
     }
   },
-  "active": "9195db34419ec7c2",
+  "active": "c9baf70f07b7fbdb",
   "lastOpenFiles": [
-    "database-table-creation.md",
     "database-table-creation-data.md",
+    "database-table-creation.md",
     "database-table-creation-grok.md",
     "database-design-documentation.md",
     "README.md",
