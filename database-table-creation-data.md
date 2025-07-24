@@ -406,6 +406,7 @@ VALUES ('*****', '*****', '百度机器翻译-文本翻译-词典版', 'https://
 CREATE TABLE `baidu_dist` (
   `id` INT NOT NULL COMMENT '翻译结果 ID，主键，非自增，简化版雪花id',
   `word` VARCHAR(255) DEFAULT NULL COMMENT '单词本身',
+  `base_translation` VARCHAR(255) DEFAULT NULL COMMENT '基础翻译字符串',
   `data_oss_url` VARCHAR(255) DEFAULT NULL COMMENT '翻译结果的 OSS 路径',
   `zh_audio_oss_url` VARCHAR(255) DEFAULT NULL COMMENT '中文音频 OSS 路径',
   `en_audio_oss_url` VARCHAR(255) DEFAULT NULL COMMENT '英文音频 OSS 路径',
